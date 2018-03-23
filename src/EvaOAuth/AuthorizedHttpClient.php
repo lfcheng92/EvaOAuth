@@ -83,7 +83,7 @@ class AuthorizedHttpClient extends Client
                         'oauth_token' => $token->getTokenValue(),
                         'oauth_version' => '1.0',
                     ];
-                    $query = $urlData->getQuery();
+                    $query = $request->getQuery();
                     if ($query) {
                         parse_str((string) $query, $extra);//url参数转数组
                         foreach ($extra as $key => $value) {
