@@ -90,6 +90,13 @@ class AuthorizedHttpClient extends Client
                             $parameters[$key] = $value;
                         }
                     }
+                    $body = $request->getBody();
+                    if($body){
+                        parse_str((string) $body, $extra);//url参数转数组
+                        foreach ($extra as $key => $value) {
+                            $parameters[$key] = $value;
+                        }
+                    }
                     $signature = (string)new $signatureClass(
                         Text::buildBaseString($httpMethod, $url, $parameters),
                         $token->getConsumerSecret(),
