@@ -73,7 +73,8 @@ class AuthorizedHttpClient extends Client
                     /** @var \Eva\EvaOAuth\OAuth1\Token\AccessToken $token */
 
                     $httpMethod = strtoupper($request->getMethod());
-                    $url = Url::fromString($request->getUrl());
+                    $urlData = Url::fromString($request->getUrl());
+                    $url = $urlData->getScheme() . '://' . $urlData->getHost() . $urlData->getPath();
                     $parameters = [
                         'oauth_consumer_key' => $token->getConsumerKey(),
                         'oauth_signature_method' => SignatureInterface::METHOD_HMAC_SHA1,
@@ -82,10 +83,16 @@ class AuthorizedHttpClient extends Client
                         'oauth_token' => $token->getTokenValue(),
                         'oauth_version' => '1.0',
                     ];
-
+                    $query = $urlData->getQuery();
+                    if ($query) {
+                        parse_str((string) $query, $extra);//url参数转数组
+                        foreach ($extra as $key => $value) {
+                            $parameters[$key] = $value;
+                        }
+                    }
                     $signature = (string)new $signatureClass(
-                        $token->getConsumerSecret(),
                         Text::buildBaseString($httpMethod, $url, $parameters),
+                        $token->getConsumerSecret(),
                         $token->getTokenSecret()
                     );
                     $parameters['oauth_signature'] = $signature;
