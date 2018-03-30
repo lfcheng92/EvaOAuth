@@ -94,6 +94,9 @@ class AuthorizedHttpClient extends Client
                     if($body){
                         parse_str((string) $body, $extra);//url参数转数组
                         foreach ($extra as $key => $value) {
+                            if(strpos($key, 'form-data') > 0){
+                                continue;
+                            }
                             $parameters[$key] = $value;
                         }
                     }
